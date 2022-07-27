@@ -12,6 +12,8 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
+var CORSheaders = require('./CORS-headers.js');
+
 var requestHandler = function(request, response) {
   // Request and Response come from node's http module.
   //
@@ -27,13 +29,42 @@ var requestHandler = function(request, response) {
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
-  console.log('Serving request type ' + request.method + ' for url ' + request.url);
+  // console.log('Serving request type ' + request.method + ' for url ' + request.url);
+  // console.log('request:', request, 'response:', response);
+  console.log('req:', request.method);
+  console.log('req:', request.url);
 
-  // The outgoing status.
-  var statusCode = 200;
 
   // See the note below about CORS headers.
-  var headers = defaultCorsHeaders;
+  var statusCode = 200;
+  var headers = CORSheaders.headers;
+  var messages = [];
+
+  if (request.method === 'GET') {
+    response.writeHead(statusCode, headers);
+    response.end(JSON.stringify(messages));
+  }
+
+  if (request.method === 'POST') {
+    statusCode = 201;
+    response.writeHead(statusCode, headers);
+
+    let body = '';
+    request.on('data', chunk => {
+      body += chunk.toString(); // convert Buffer to string
+    });
+
+    request.on('end', () => {
+      var newBody = JSON.parse(body);
+      console.log(newBody);
+      console.log(newBody.username);
+      messages.push(newBody);
+      console.log(JSON.stringify(messages));
+      response.end(JSON.stringify(messages));
+    });
+  }
+
+
 
   // Tell the client we are sending them plain text.
   //
@@ -52,8 +83,11 @@ var requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end('Hello, World!');
+  //var returnArray = [];
+
 };
+
+exports.handleRequest = requestHandler;
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
 // This code allows this server to talk to websites that
@@ -64,9 +98,4 @@ var requestHandler = function(request, response) {
 //
 // Another way to get around this restriction is to serve you chat
 // client from this domain by setting up static file serving.
-var defaultCorsHeaders = {
-  'access-control-allow-origin': '*',
-  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'access-control-allow-headers': 'content-type, accept, authorization',
-  'access-control-max-age': 10 // Seconds.
-};
+
