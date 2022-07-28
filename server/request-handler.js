@@ -12,7 +12,7 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
-var CORSheaders = require('./CORS-headers.js');
+var messages = [];
 
 var requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -37,11 +37,28 @@ var requestHandler = function(request, response) {
 
   // See the note below about CORS headers.
   var statusCode = 200;
-  var headers = CORSheaders.headers;
-  var messages = [];
+  var defaultCorsHeaders = {
+    'access-control-allow-origin': '*',
+    'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'access-control-allow-headers': 'content-type, accept, authorization',
+    'access-control-max-age': 10 // Seconds.
+  };
+  var headers = defaultCorsHeaders;
+  // Tell the client we are sending them plain text.
+  //
+  // You will need to change this if you are sending something
+  // other than plain text, like JSON or HTML.
+  headers['Content-Type'] = 'application/json';
+
+  if (request.url !== '/classes/messages') {
+    statusCode = 404;
+    response.writeHead(statusCode, headers);
+    response.end('Server not found');
+  }
 
   if (request.method === 'GET') {
     response.writeHead(statusCode, headers);
+    console.log(messages);
     response.end(JSON.stringify(messages));
   }
 
@@ -55,22 +72,15 @@ var requestHandler = function(request, response) {
     });
 
     request.on('end', () => {
-      var newBody = JSON.parse(body);
-      console.log(newBody);
-      console.log(newBody.username);
-      messages.push(newBody);
-      console.log(JSON.stringify(messages));
-      response.end(JSON.stringify(messages));
+      body = JSON.parse(body);
+      messages.push(body);
+      console.log(messages);
+      response.end();
     });
   }
 
 
 
-  // Tell the client we are sending them plain text.
-  //
-  // You will need to change this if you are sending something
-  // other than plain text, like JSON or HTML.
-  headers['Content-Type'] = 'text/plain';
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
