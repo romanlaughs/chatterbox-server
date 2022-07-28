@@ -75,7 +75,7 @@ var requestHandler = function(request, response) {
   // node to actually send all the data over to the client.
 };
 
-exports.handleRequest = requestHandler;
+exports.requestHandler = requestHandler;
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
 // This code allows this server to talk to websites that

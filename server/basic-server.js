@@ -15,7 +15,7 @@ var ip = '127.0.0.1';
 
 
 var handle = require('./request-handler.js');
-var handleRequest = handle.handleRequest;
+var handleRequest = handle.requestHandler;
 
 
 // We use node's http module to create a server.
