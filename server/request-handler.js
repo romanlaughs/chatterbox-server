@@ -42,7 +42,7 @@ var requestHandler = function(request, response) {
 
   if (request.method === 'OPTIONS') {
     response.writeHead(statusCode, headers);
-    response.end('');
+    response.end('OK');
   } else if (request.url !== '/classes/messages') {
     statusCode = 404;
     response.writeHead(statusCode, headers);

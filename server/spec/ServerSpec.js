@@ -76,8 +76,8 @@ describe('Node Server Request Listener Function', function() {
     expect(res._responseCode).to.equal(200);
     var messages = JSON.parse(res._data);
     expect(messages.length).to.be.above(0);
-    expect(messages[0].username).to.equal('Jono');
-    expect(messages[0].text).to.equal('Do my bidding!');
+    expect(messages[1].username).to.equal('Jono');
+    expect(messages[1].text).to.equal('Do my bidding!');
     expect(res._ended).to.equal(true);
   });
 
@@ -114,8 +114,8 @@ describe('Node Server Request Listener Function', function() {
     expect(res._responseCode).to.equal(200);
     var messages = JSON.parse(res._data);
     expect(messages.length).to.be.above(0);
-    expect(messages[2].username).to.equal('Nick');
-    expect(messages[2].text).to.equal('Servers r sick');
+    expect(messages[3].username).to.equal('Nick');
+    expect(messages[3].text).to.equal('Servers r sick');
     expect(res._ended).to.equal(true);
   });
 
@@ -141,6 +141,33 @@ describe('Node Server Request Listener Function', function() {
     expect(res._ended).to.equal(true);
   });
 
+  it('Should answer OPTIONS requests for /classes/messages with a 200 status code', function() {
+    // This is a fake server request. Normally, the server would provide this,
+    // but we want to test our function's behavior totally independent of the server code
+    var req = new stubs.request('/classes/messages', 'OPTIONS');
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(200);
+    expect(res._ended).to.equal(true);
+  });
+
+  it('Should initialize with dummy message to allow client to initialize', function() {
+    // This is a fake server request. Normally, the server would provide this,
+    // but we want to test our function's behavior totally independent of the server code
+    req = new stubs.request('/classes/messages', 'GET');
+    res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(200);
+    var messages = JSON.parse(res._data);
+    expect(messages.length).to.be.above(0);
+    expect(messages[0].username).to.equal('userTest');
+    expect(messages[0].text).to.equal('this is the test');
+    expect(res._ended).to.equal(true);
+  });
 
 
 });
