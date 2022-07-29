@@ -44,14 +44,10 @@ var requestHandler = function(request, response) {
     statusCode = 404;
     response.writeHead(statusCode, headers);
     response.end('Server not found');
-  }
-
-  if (request.method === 'GET') {
+  } else if (request.method === 'GET') {
     response.writeHead(statusCode, headers);
     response.end(JSON.stringify(messages));
-  }
-
-  if (request.method === 'POST') {
+  } else if (request.method === 'POST') {
     statusCode = 201;
     response.writeHead(statusCode, headers);
 
