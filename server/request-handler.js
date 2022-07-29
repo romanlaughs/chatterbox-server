@@ -12,7 +12,7 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
-var messages = [];
+var messages = [{username: 'userTest', text: 'this is the test', roomname: 'room1'}];
 
 var requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -40,7 +40,10 @@ var requestHandler = function(request, response) {
   var headers = defaultCorsHeaders;
   headers['Content-Type'] = 'application/json';
 
-  if (request.url !== '/classes/messages') {
+  if (request.method === 'OPTIONS') {
+    response.writeHead(statusCode, headers);
+    response.end('');
+  } else if (request.url !== '/classes/messages') {
     statusCode = 404;
     response.writeHead(statusCode, headers);
     response.end('Server not found');
